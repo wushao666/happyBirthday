@@ -128,10 +128,11 @@ h1 {
 }
 
 #firework-button {
+  font-size: clamp(20px, 4vw, 24px);
   display: none;
   background-color: #FF8C00;
+  /* background-color: #FF8CCC; */
   color: white;
-  font-size: 24px;
   padding: 15px 30px;
   border: none;
   border-radius: 50px;
