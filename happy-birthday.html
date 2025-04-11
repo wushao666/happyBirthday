@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+    <title>宝贝儿生日快乐!</title>
+    <style>
+        /* @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap'); */
+        @import url('./styles/base.css');
+
+        body {
+            background: radial-gradient(circle, #ffb6c1, #ffd700);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            color: white;
+            font-size: clamp(30px, 8vw, 60px);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            animation: pulse 0.5s infinite alternate;
+            text-align: center;
+        }
+
+        @keyframes pulse {
+            from {
+                transform: scale(1);
+            }
+
+            to {
+                transform: scale(1.1);
+            }
+        }
+
+        #message {
+            font-family: YouYuan;
+            font-size: clamp(16px, 4vw, 24px);
+            margin: 20px 0;
+            text-align: center;
+            z-index: 1;
+        }
+
+        #message span {
+            display: inline-block;
+            animation: pop 0.3s ease-out;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(0);
+            }
+            80% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        #message::after {
+            content: '|';
+            animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+        }
+
+        #image {
+            width: min(300px, 80vw);
+            height: auto;
+            z-index: 1;
+        }
+
+        .falling {
+            position: absolute;
+            top: -50px;
+            animation: fall linear infinite;
+            font-size: 32px;
+            z-index: 1;
+        }
+
+        @keyframes fall {
+            to {
+                top: 100vh;
+            }
+        }
+
+        #fireworks-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        #click-button {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            /* background-color: #ff8c00; */
+            background-color: #ff8ccc;
+            color: white;
+            font-size: 24px;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        #click-button:hover {
+            background-color: #ffc107;
+            transform: translateX(-50%) scale(1.1);
+        }
+        #firework-button {
+            display: none;
+            background-color: #FF8C00;
+            color: white;
+            font-size: 24px;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 100;
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        #firework-button:hover {
+            background-color: #FFA500;
+            transform: scale(1.1);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script> -->
+    <script src="./libs/three.min.js"></script>
+</head>
+
+<body>
+    <h1>Happy Birthday!</h1>
+    <div id="message"></div>
+    <img id="image" src="./6a30c75a0b0b77cb595a1b3362796d3b_1741678103707880520.png~tplv-a9rns2rl98-image.png"
+        alt="Birthday Image">
+    <audio id="bgMusic" src="./happy-birthday-254480.mp3"
+        loop></audio>
+    <audio id="typingSound" src="./happy-birthday-254480.mp3" muted></audio>
+    <audio id="fireworkSound" src="./happy-birthday-254480.mp3" muted></audio>
+    <div id="fireworks-container"></div>
+    <button id="click-button">🎤~啦啦啦~</button>
+    <button id="firework-button">点我~点我~👩‍❤️‍👨去看🎆~~</button>
+    <script>
+        const emojis = ['💖', '🎈', '⭐', '🎂'];
+        const messages = [
+            '愿你的生日如璀璨星辰般闪耀，幸福永远与你相伴！',
+            '在这个特别的日子里，祝你生日快乐，梦想成真！',
+            '生日快乐！愿生活的每一天都充满阳光和欢笑。',
+            '愿你的生日是一场奇妙的冒险，快乐永不止步！',
+            '祝你生日快乐，岁岁年年都有今朝的快乐！'
+        ];
+        const messageElement = document.getElementById('message');
+        const bgMusic = document.getElementById('bgMusic');
+        const typingSound = document.getElementById('typingSound');
+        const fireworkSound = document.getElementById('fireworkSound');
+        const fireworkButton = document.getElementById('firework-button');
+        let messageIndex = 0;
+        let charIndex = 0;
+        let lineIndex = 0;
+
+        function typeLine() {
+            const currentMessage = messages[lineIndex];
+            if (charIndex < currentMessage.length) {
+                const randomSpeed = Math.floor(Math.random() * 200) + 50;
+                setTimeout(() => {
+                    const charSpan = document.createElement('span');
+                    charSpan.textContent = currentMessage.charAt(charIndex);
+                    messageElement.appendChild(charSpan);
+                    typingSound.currentTime = 0;
+                    typingSound.play();
+                    charIndex++;
+                    typeLine();
+                }, randomSpeed);
+            } else {
+                const br = document.createElement('br');
+                messageElement.appendChild(br);
+                lineIndex++;
+                charIndex = 0;
+                if (lineIndex < messages.length) {
+                    setTimeout(typeLine, 800);
+                } else {
+                    // 文字打印完毕，开始烟花效果
+                    startFireworks();
+                    // 文字打印完毕，显示按钮
+                    fireworkButton.style.display = 'block';
+                    fireworkButton.addEventListener('click', () => {
+                      window.open('https://vvushaolin.com/firework/index.html')
+                    });
+                }
+            }
+        }
+
+        typeLine();
+
+        function startFireworks() {
+            const container = document.getElementById('fireworks-container');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+
+            camera.position.z = 5;
+
+            const fireworks = [];
+
+            function createFirework() {
+                const colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const position = new THREE.Vector3(
+                    (Math.random() - 0.5) * 10,
+                    (Math.random() - 0.5) * 10,
+                    (Math.random() - 0.5) * 10
+                );
+
+                const geometry = new THREE.SphereGeometry(0.05, 32, 32);
+                const material = new THREE.MeshBasicMaterial({ color: color });
+                const firework = new THREE.Mesh(geometry, material);
+                firework.position.copy(position);
+                scene.add(firework);
+
+                const particles = [];
+                const numParticles = 100;
+                for (let i = 0; i < numParticles; i++) {
+                    const particleGeometry = new THREE.SphereGeometry(0.02, 32, 32);
+                    const particleMaterial = new THREE.MeshBasicMaterial({ color: color });
+                    const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+                    particle.position.copy(position);
+                    const direction = new THREE.Vector3(
+                        (Math.random() - 0.5),
+                        (Math.random() - 0.5),
+                        (Math.random() - 0.5)
+                    ).normalize();
+                    particle.velocity = direction.multiplyScalar(Math.random() * 0.5);
+                    scene.add(particle);
+                    particles.push(particle);
+                }
+
+                fireworks.push({ firework, particles, time: 0 });
+                fireworkSound.currentTime = 0;
+                fireworkSound.play();
+            }
+
+            function animate() {
+                requestAnimationFrame(animate);
+
+                for (let i = fireworks.length - 1; i >= 0; i--) {
+                    const { firework, particles, time } = fireworks[i];
+                    if (time === 0) {
+                        scene.remove(firework);
+                    }
+                    for (let j = 0; j < particles.length; j++) {
+                        const particle = particles[j];
+                        particle.position.add(particle.velocity);
+                        particle.material.opacity = Math.max(0, 1 - time / 1);
+                        particle.material.transparent = true;
+                    }
+                    if (time > 1) {
+                        for (let j = 0; j < particles.length; j++) {
+                            scene.remove(particles[j]);
+                        }
+                        fireworks.splice(i, 1);
+                    } else {
+                        fireworks[i].time += 0.01;
+                    }
+                }
+
+                renderer.render(scene, camera);
+            }
+
+            const intervalId = setInterval(createFirework, 1000);
+
+            // 持续一段时间后停止烟花效果
+            setTimeout(() => {
+                clearInterval(intervalId);
+            }, 10000);
+
+            animate();
+        }
+
+        document.addEventListener('click', () => {
+            if (bgMusic.paused) {
+                bgMusic.play().catch((error) => {
+                    console.log('播放音乐失败:', error);
+                });
+            }
+        });
+
+        function createFallingEmoji() {
+            const emoji = document.createElement('span');
+            emoji.classList.add('falling');
+            emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            emoji.style.left = Math.random() * window.innerWidth + 'px';
+            emoji.style.animationDuration = Math.random() * 3 + 2 + 's';
+            document.body.appendChild(emoji);
+
+            setTimeout(() => {
+                document.body.removeChild(emoji);
+            }, 5000);
+        }
+
+        setInterval(createFallingEmoji, 500);
+
+        document.addEventListener('mousemove', (e) => {
+            const cake = document.createElement('span');
+            cake.classList.add('falling');
+            cake.textContent = '🎂';
+            cake.style.left = e.clientX + 'px';
+            cake.style.top = e.clientY + 'px';
+            cake.style.animationDuration = Math.random() * 3 + 2 + 's';
+            document.body.appendChild(cake);
+
+            setTimeout(() => {
+                document.body.removeChild(cake);
+            }, 5000);
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            const touch = e.touches[0];
+            const cake = document.createElement('span');
+            cake.classList.add('falling');
+            cake.textContent = '🎂';
+            cake.style.left = touch.clientX + 'px';
+            cake.style.top = touch.clientY + 'px';
+            cake.style.animationDuration = Math.random() * 3 + 2 + 's';
+            document.body.appendChild(cake);
+
+            setTimeout(() => {
+                document.body.removeChild(cake);
+            }, 5000);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.addEventListener('click', () => {
+                if (bgMusic.paused) {
+                    bgMusic.play().catch((error) => {
+                        console.log('播放音乐失败:', error);
+                    });
+                }
+            }, { once: true });
+        });
+    </script>
+</body>
+
+</html>    
