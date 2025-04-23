@@ -9,7 +9,7 @@ body {
   justify-content: center;
   height: 100vh;
   margin: 0;
-  overflow: hidden;
+  overflow-y: hidden;
 }
 
 h1 {
@@ -34,7 +34,7 @@ h1 {
 #message {
   font-family: YouYuan;
   font-size: clamp(16px, 4vw, 24px);
-  margin: 20px 0;
+  /* margin: 20px 0; */
   text-align: center;
   z-index: 1;
 }
@@ -152,7 +152,7 @@ h1 {
   /* 增加移动端触摸区域 */
   min-width: 44px;
   min-height: 44px;
-  margin: 20px;
+  margin: 0px 20px;
   /* 移动端点击反馈 */
   -webkit-tap-highlight-color: transparent;
   /* 避免文字选中 */
