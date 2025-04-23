@@ -55,21 +55,29 @@
     </div>
 
   </div>
-  <button id="firework-button">点我~点我~👩‍❤️‍👨去看🎆~~</button>
+  <div id="btns">
+    <button id="firework-button">👩‍❤️‍👨去看🎆~</button>
+    <button id="movie-button">👩‍❤️‍👨去看看🎬~</button>
+  </div>
+  
   <script>
     const emojis = ['💖', '🎈', '⭐', '🎂'];
     const messages = [
-      '愿你的生日如璀璨星辰般闪耀，幸福永远与你相伴！',
-      '在这个特别的日子里，祝你生日快乐，梦想成真！',
-      '生日快乐！愿生活的每一天都充满阳光和欢笑。',
-      '愿你的生日是一场奇妙的冒险，快乐永不止步！',
-      '祝你生日快乐，岁岁年年都有今朝的快乐！'
+      '愿蕊宝儿的论文源源不断，想的、梦的都成真！',
+      '在这个特别的日子里，祝你生日快乐~',
+      '我滴宝儿，生活的每一天都要充满阳光和欢笑。',
+      '希望你的人生是一场奇妙的冒险，快乐永不止步！',
+      '愿你在新的一岁里，勇敢追梦，永不放弃！',
+      '无论前方多远，我都会陪着你，一起走过每一个春夏秋冬。',
+      '生日快乐，岁岁年年都有今朝的快乐！'
     ];
     const messageElement = document.getElementById('message');
     const bgMusic = document.getElementById('bgMusic');
     const typingSound = document.getElementById('typingSound');
     const fireworkSound = document.getElementById('fireworkSound');
     const fireworkButton = document.getElementById('firework-button');
+    const movieButton = document.getElementById('movie-button');
+    const btns = document.getElementById('btns');
     let messageIndex = 0;
     let charIndex = 0;
     let lineIndex = 0;
@@ -98,10 +106,17 @@
           // 文字打印完毕，开始烟花效果
           startFireworks();
           // 文字打印完毕，显示按钮
-          fireworkButton.style.display = 'block';
+          btns.style.display = 'flex';
+          // fireworkButton.style.display = 'flex';
+          // fireworkButton.style.justifyContent = 'center';
+          // fireworkButton.style.alignItems = 'center';
+          // fireworkButton.style.cursor = 'pointer';
           fireworkButton.addEventListener('click', () => {
             // window.open('https://vvushaolin.com/firework/index.html')
             location.href = 'https://vvushaolin.com/firework/index.html';
+          });
+          movieBtn.addEventListener('click', () => {
+            window.open('https://vvushaolin.com/go-movies/index.html')
           });
         }
       }

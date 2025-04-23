@@ -126,10 +126,16 @@ h1 {
   background-color: #ffc107;
   transform: translateX(-50%) scale(1.1);
 }
-
-#firework-button {
-  font-size: clamp(20px, 4vw, 24px);
+#btns {
   display: none;
+}
+#firework-button,
+#movie-button {
+  font-size: clamp(20px, 4vw, 24px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
   background-color: #FF8C00;
   /* background-color: #FF8CCC; */
   color: white;
@@ -197,7 +203,8 @@ h1 {
 }
 
 /* 调整悬停效果 */
-#firework-button:hover {
+#firework-button:hover,
+#movie-button:hover {
   background-color: #FFA500;
   transform: scale(1.05) translateY(-1px) !important;
   box-shadow: 
@@ -209,7 +216,8 @@ h1 {
 }
 
 /* 调整点击效果 */
-#firework-button:active {
+#firework-button:active,
+#movie-button:active {
   transform: scale(0.98) !important;
   box-shadow: 
     0 2px 8px rgba(255, 140, 0, 0.15),
